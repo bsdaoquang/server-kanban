@@ -1,10 +1,11 @@
 /** @format */
 
 import { Router } from 'express';
-import { getProducts } from '../controllers/products';
+import { addNew } from '../controllers/supplier';
 
 const router = Router();
 
-router.get('/products', getProducts);
+router.get('/');
+router.post('/add-new', addNew);
 
 export default router;
