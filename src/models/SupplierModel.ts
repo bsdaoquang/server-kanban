@@ -19,6 +19,8 @@ const supplierScheme = new Schema({
 		default: 0,
 		enum: [0, 1],
 	},
+	email: String,
+	active: Number,
 	photoUrl: String,
 	createdAt: {
 		type: Date,
@@ -27,6 +29,10 @@ const supplierScheme = new Schema({
 	updatedAt: {
 		type: Date,
 		default: Date.now(),
+	},
+	isDeleted: {
+		type: Boolean,
+		default: false,
 	},
 });
 
