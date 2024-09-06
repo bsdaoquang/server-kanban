@@ -28,6 +28,46 @@ const getSuppliers = async (req: any, res: any) => {
 		});
 	}
 };
+
+const getExportData = async (req: any, res: any) => {
+	const body = req.body;
+	const { start, end } = req.query;
+
+	const filter: any = {};
+
+	if (start && end) {
+		filter.createdAt = {
+			$lte: end,
+			$gte: start,
+		};
+	}
+
+	try {
+		const items = await SupplierModel.find(filter);
+
+		const data: any = [];
+		if (items.length > 0) {
+			items.forEach((item: any) => {
+				const value: any = {};
+
+				body.forEach((key: string) => {
+					value[`${key}`] = `${item._doc[`${key}`] ?? ''}`;
+				});
+
+				data.push(value);
+			});
+		}
+
+		res.status(200).json({
+			message: 'Products',
+			data: data,
+		});
+	} catch (error: any) {
+		res.status(404).json({
+			message: error.message,
+		});
+	}
+};
 const addNew = async (req: any, res: any) => {
 	const body = req.body;
 	try {
@@ -99,4 +139,4 @@ const getForm = async (req: any, res: any) => {
 	}
 };
 
-export { addNew, getSuppliers, update, removeSupplier, getForm };
+export { addNew, getSuppliers, update, removeSupplier, getForm, getExportData };
