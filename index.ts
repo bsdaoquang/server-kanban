@@ -5,6 +5,7 @@ import express from 'express';
 import mongoose from 'mongoose';
 import userRouter from './src/routers/user';
 import storageRouter from './src/routers/storage';
+import productRouter from './src/routers/productRouter';
 import supplierRouter from './src/routers/supplier';
 import cors from 'cors';
 import { verifyToken } from './src/middlewares/verifyToken';
@@ -22,6 +23,7 @@ app.use('/auth', userRouter);
 app.use(verifyToken);
 app.use('/storage', storageRouter);
 app.use('/supplier', supplierRouter);
+app.use('/products', productRouter);
 
 const connectDB = async () => {
 	try {
