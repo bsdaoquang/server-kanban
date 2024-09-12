@@ -20,6 +20,10 @@ const scheme = new Schema({
 		type: Date,
 		default: Date.now,
 	},
+	isDeleted: {
+		type: Boolean,
+		default: false,
+	},
 });
 
 const CategoryModel = mongoose.model('categories', scheme);
