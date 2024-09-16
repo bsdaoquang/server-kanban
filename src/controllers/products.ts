@@ -1,9 +1,7 @@
 /** @format */
 
-import { ObjectId } from 'mongoose';
 import CategoryModel from '../models/CategortModel';
 import ProductModel from '../models/ProductModel';
-import SupplierModel from '../models/SupplierModel';
 
 const getProducts = async (req: any, res: any) => {
 	try {
@@ -158,9 +156,9 @@ const updateCategory = async (req: any, res: any) => {
 };
 
 export {
-	getProducts,
 	addCategory,
-	getCategories,
 	deleteCategories,
+	getCategories,
+	getProducts,
 	updateCategory,
 };
