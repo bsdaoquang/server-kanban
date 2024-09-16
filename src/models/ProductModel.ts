@@ -17,6 +17,9 @@ const scheme = new Schema({
 	expiryDate: {
 		type: Date,
 	},
+	images: {
+		type: [String],
+	},
 	createdAt: {
 		type: Date,
 		default: Date.now,
@@ -24,6 +27,10 @@ const scheme = new Schema({
 	updatedAt: {
 		type: Date,
 		default: Date.now,
+	},
+	isDeleted: {
+		type: Boolean,
+		default: false,
 	},
 });
 

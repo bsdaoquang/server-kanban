@@ -3,19 +3,6 @@
 import CategoryModel from '../models/CategortModel';
 import ProductModel from '../models/ProductModel';
 
-const getProducts = async (req: any, res: any) => {
-	try {
-		res.status(200).json({
-			message: 'Products',
-			data: [],
-		});
-	} catch (error: any) {
-		res.status(404).json({
-			message: error.message,
-		});
-	}
-};
-
 const addCategory = async (req: any, res: any) => {
 	const body = req.body;
 	const { parentId, title, description, slug } = body;
@@ -155,10 +142,52 @@ const updateCategory = async (req: any, res: any) => {
 	}
 };
 
+// Products
+const addProduct = async (req: any, res: any) => {
+	const body = req.body;
+
+	try {
+		const newProduct = new ProductModel(body);
+
+		await newProduct.save();
+
+		res.status(200).json({
+			message: 'Products',
+			data: newProduct,
+		});
+	} catch (error: any) {
+		res.status(404).json({
+			message: error.message,
+		});
+	}
+};
+const getProducts = async (req: any, res: any) => {
+	const { page, pageSize } = req.query;
+	try {
+		const skip = (page - 1) * pageSize;
+
+		const products = await ProductModel.find({
+			isDeleted: false,
+		})
+			.skip(skip)
+			.limit(pageSize);
+
+		res.status(200).json({
+			message: 'Products',
+			data: products,
+		});
+	} catch (error: any) {
+		res.status(404).json({
+			message: error.message,
+		});
+	}
+};
+
 export {
 	addCategory,
 	deleteCategories,
 	getCategories,
 	getProducts,
 	updateCategory,
+	addProduct,
 };
