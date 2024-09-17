@@ -2,6 +2,7 @@
 
 import CategoryModel from '../models/CategortModel';
 import ProductModel from '../models/ProductModel';
+import SubProductModel from '../models/SubProductModel';
 
 const addCategory = async (req: any, res: any) => {
 	const body = req.body;
@@ -46,6 +47,22 @@ const getCategories = async (req: any, res: any) => {
 		res.status(200).json({
 			message: 'Products',
 			data: categories,
+		});
+	} catch (error: any) {
+		res.status(404).json({
+			message: error.message,
+		});
+	}
+};
+const getCategoryDetail = async (req: any, res: any) => {
+	const { id } = req.query;
+
+	try {
+		const item = await CategoryModel.findById(id);
+
+		res.status(200).json({
+			message: 'Products',
+			data: item,
 		});
 	} catch (error: any) {
 		res.status(404).json({
@@ -161,6 +178,7 @@ const addProduct = async (req: any, res: any) => {
 		});
 	}
 };
+
 const getProducts = async (req: any, res: any) => {
 	const { page, pageSize } = req.query;
 	try {
@@ -183,6 +201,25 @@ const getProducts = async (req: any, res: any) => {
 	}
 };
 
+const addSubProduct = async (req: any, res: any) => {
+	const body = req.body;
+
+	try {
+		const subProduct = new SubProductModel(body);
+
+		await subProduct.save();
+
+		res.status(200).json({
+			message: 'Add sub product successfully!!!',
+			data: subProduct,
+		});
+	} catch (error: any) {
+		res.status(404).json({
+			message: error.message,
+		});
+	}
+};
+
 export {
 	addCategory,
 	deleteCategories,
@@ -190,4 +227,6 @@ export {
 	getProducts,
 	updateCategory,
 	addProduct,
+	getCategoryDetail,
+	addSubProduct,
 };
