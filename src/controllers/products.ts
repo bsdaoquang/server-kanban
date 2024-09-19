@@ -54,6 +54,7 @@ const getCategories = async (req: any, res: any) => {
 		});
 	}
 };
+
 const getCategoryDetail = async (req: any, res: any) => {
 	const { id } = req.query;
 
