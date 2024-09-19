@@ -190,10 +190,29 @@ const getProducts = async (req: any, res: any) => {
 			.skip(skip)
 			.limit(pageSize);
 
-		res.status(200).json({
-			message: 'Products',
-			data: products,
-		});
+		const items: any = [];
+
+		if (products.length > 0) {
+			products.forEach(async (item: any) => {
+				const children = await SubProductModel.find({ productId: item._id });
+
+				items.push({
+					...item._doc,
+					subItems: children,
+				});
+
+				items.length === products.length &&
+					res.status(200).json({
+						message: 'Products',
+						data: items,
+					});
+			});
+		} else {
+			res.status(200).json({
+				message: 'Products',
+				data: [],
+			});
+		}
 	} catch (error: any) {
 		res.status(404).json({
 			message: error.message,
@@ -220,6 +239,38 @@ const addSubProduct = async (req: any, res: any) => {
 	}
 };
 
+const handleRemoveSubProduct = async (items: any[]) => {
+	items.forEach(async (item) => {
+		await SubProductModel.findByIdAndUpdate(item._id, {
+			isDeleted: true,
+		});
+	});
+};
+
+const removeProduct = async (req: any, res: any) => {
+	const { id } = req.query;
+
+	try {
+		const subItems = await SubProductModel.find({ productId: id });
+
+		if (subItems.length > 0) {
+			await handleRemoveSubProduct(subItems);
+		}
+
+		await ProductModel.findByIdAndUpdate(id, {
+			isDeleted: true,
+		});
+
+		res.status(200).json({
+			message: 'Product removed!!',
+		});
+	} catch (error: any) {
+		res.status(404).json({
+			message: error.message,
+		});
+	}
+};
+
 export {
 	addCategory,
 	deleteCategories,
@@ -229,4 +280,5 @@ export {
 	addProduct,
 	getCategoryDetail,
 	addSubProduct,
+	removeProduct,
 };
