@@ -8,17 +8,21 @@ import {
 	deleteCategories,
 	getCategories,
 	getCategoryDetail,
+	getProductDetail,
 	getProducts,
 	removeProduct,
 	updateCategory,
+	updateProduct,
 } from '../controllers/products';
 
 const router = Router();
 
 router.post('/add-new', addProduct);
 router.get('/', getProducts);
+router.get('/detail', getProductDetail);
 router.post('/add-sub-product', addSubProduct);
 router.delete('/delete', removeProduct);
+router.put('/update', updateProduct);
 
 // categories
 router.post('/add-category', addCategory);

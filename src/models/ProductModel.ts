@@ -14,6 +14,7 @@ const scheme = new Schema({
 		require: true,
 		type: String,
 	},
+	content: String,
 	expiryDate: {
 		type: Date,
 	},

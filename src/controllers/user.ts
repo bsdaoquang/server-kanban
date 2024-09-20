@@ -52,16 +52,20 @@ const loginWithGoogle = async (req: any, res: any) => {
 		const user: any = await UserModel.findOne({ email });
 
 		if (user) {
-			delete user._doc.password;
+			await UserModel.findByIdAndUpdate(user._id, body);
+
+			const newUser: any = await UserModel.findById(user._id);
+
+			delete newUser._doc.password;
 
 			res.status(200).json({
 				message: 'Login successfuly!!!',
 				data: {
-					...user._doc,
+					...newUser._doc,
 					token: await getAccesstoken({
-						_id: user._id,
-						email: user.email,
-						rule: user.rule ?? 1,
+						_id: newUser._id,
+						email: newUser.email,
+						rule: newUser.rule ?? 1,
 					}),
 				},
 			});
