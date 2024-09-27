@@ -6,8 +6,10 @@ import {
 	addProduct,
 	addSubProduct,
 	deleteCategories,
+	filterProducts,
 	getCategories,
 	getCategoryDetail,
+	getFilterValues,
 	getProductDetail,
 	getProducts,
 	removeProduct,
@@ -30,4 +32,6 @@ router.get('/get-categories', getCategories);
 router.get('/categories/detail', getCategoryDetail);
 router.delete('/delete-category', deleteCategories);
 router.put('/update-category', updateCategory);
+router.get('/get-filter-values', getFilterValues);
+router.post('/filter-products', filterProducts);
 export default router;

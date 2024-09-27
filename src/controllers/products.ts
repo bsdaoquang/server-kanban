@@ -4,6 +4,11 @@ import CategoryModel from '../models/CategortModel';
 import ProductModel from '../models/ProductModel';
 import SubProductModel from '../models/SubProductModel';
 
+interface SelectModel {
+	label: string;
+	value: string;
+}
+
 const addCategory = async (req: any, res: any) => {
 	const body = req.body;
 	const { parentId, title, description, slug } = body;
@@ -181,15 +186,26 @@ const addProduct = async (req: any, res: any) => {
 };
 
 const getProducts = async (req: any, res: any) => {
-	const { page, pageSize } = req.query;
+	const { page, pageSize, title } = req.query;
+
+	await checkDeletedProduct();
+
+	const filter: any = {};
+
+	filter.isDeleted = false;
+
+	if (title) {
+		filter.slug = { $regex: title };
+	}
+
 	try {
 		const skip = (page - 1) * pageSize;
 
-		const products = await ProductModel.find({
+		const products = await ProductModel.find(filter).skip(skip).limit(pageSize);
+
+		const total = await ProductModel.find({
 			isDeleted: false,
-		})
-			.skip(skip)
-			.limit(pageSize);
+		});
 
 		const items: any = [];
 
@@ -205,7 +221,7 @@ const getProducts = async (req: any, res: any) => {
 				items.length === products.length &&
 					res.status(200).json({
 						message: 'Products',
-						data: items,
+						data: { items, totalItems: total.length },
 					});
 			});
 		} else {
@@ -220,6 +236,30 @@ const getProducts = async (req: any, res: any) => {
 		});
 	}
 };
+
+const checkDeletedProduct = async () => {
+	console.log('Get and check deleted product about 30 days from now');
+
+	/*
+
+		const productDeleted = await ProductModel.find({
+			isDeleted: true
+		})
+	
+
+		productDeleted.forEach(product => {
+
+
+		const users = await userModel.find({
+			favouritest: {$all: product_id}
+		})
+
+		if(users.length === 0)
+			remove product
+		})
+	*/
+};
+
 const getProductDetail = async (req: any, res: any) => {
 	const { id } = req.query;
 	try {
@@ -304,6 +344,87 @@ const updateProduct = async (req: any, res: any) => {
 	}
 };
 
+const getFilterValues = async (req: any, res: any) => {
+	try {
+		const datas = await SubProductModel.find();
+
+		const colors: SelectModel[] = [];
+		const sizes: SelectModel[] = [];
+		const prices: number[] = [];
+
+		if (datas.length > 0) {
+			datas.forEach((item) => {
+				item.color && colors.push({ label: item.color, value: item.color });
+				item.size && sizes.push({ label: item.size, value: item.size });
+				prices.push(item.price);
+			});
+		}
+
+		res.status(200).json({
+			message: 'fafa',
+			data: {
+				colors,
+				prices,
+				sizes,
+			},
+		});
+	} catch (error: any) {
+		res.status(404).json({
+			message: error.message,
+		});
+	}
+};
+
+const filterProducts = async (req: any, res: any) => {
+	const body = req.body;
+
+	const { color, size, price, categories } = body;
+	try {
+		const products = await ProductModel.find({
+			isDeleted: false,
+			categories: { $all: categories },
+		});
+
+		if (products.length > 0) {
+			const items = [];
+
+			products.forEach(async (item) => {
+				const subItems = await SubProductModel.find({
+					productId: item._id,
+					color: color,
+					sizes: { $all: size },
+					price: {
+						$and: [
+							{
+								$lte: price[1],
+							},
+							{
+								$gte: price[0],
+							},
+						],
+					},
+				});
+
+				console.log(subItems);
+			});
+
+			res.status(200).json({
+				message: 'fafa',
+				data: [],
+			});
+		} else {
+			res.status(200).json({
+				message: 'fafa',
+				data: [],
+			});
+		}
+	} catch (error: any) {
+		res.status(404).json({
+			message: error.message,
+		});
+	}
+};
+
 export {
 	addCategory,
 	deleteCategories,
@@ -316,4 +437,6 @@ export {
 	removeProduct,
 	getProductDetail,
 	updateProduct,
+	getFilterValues,
+	filterProducts,
 };
