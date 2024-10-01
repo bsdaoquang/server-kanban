@@ -102,6 +102,9 @@ const findAndRemoveCategoryInProducts = async (id: string) => {
 	// return data;
 };
 
+// @daoquang-livecode
+// @bsdaoquang
+
 const handleRemoveCategoryInProducts = async (id: string) => {
 	await CategoryModel.findByIdAndDelete(id);
 	const products = await ProductModel.find({ categories: { $all: id } });
@@ -211,7 +214,10 @@ const getProducts = async (req: any, res: any) => {
 
 		if (products.length > 0) {
 			products.forEach(async (item: any) => {
-				const children = await SubProductModel.find({ productId: item._id });
+				const children = await SubProductModel.find({
+					productId: item._id,
+					isDeleted: false,
+				});
 
 				items.push({
 					...item._doc,
@@ -238,8 +244,7 @@ const getProducts = async (req: any, res: any) => {
 };
 
 const checkDeletedProduct = async () => {
-	console.log('Get and check deleted product about 30 days from now');
-
+	// console.log('Get and check deleted product about 30 days from now');
 	/*
 
 		const productDeleted = await ProductModel.find({
@@ -264,10 +269,54 @@ const getProductDetail = async (req: any, res: any) => {
 	const { id } = req.query;
 	try {
 		const item = await ProductModel.findById(id);
+		const subProducts = await SubProductModel.find({
+			productId: id,
+			isDeleted: false,
+		});
 
 		res.status(200).json({
 			message: 'Products',
-			data: item,
+			data: {
+				product: item,
+				subProducts,
+			},
+		});
+	} catch (error: any) {
+		res.status(404).json({
+			message: error.message,
+		});
+	}
+};
+
+const removeSubProduct = async (req: any, res: any) => {
+	const { id, isSoftDelete } = req.query;
+	try {
+		if (isSoftDelete) {
+			await SubProductModel.findByIdAndUpdate(id, {
+				isDeleted: true,
+			});
+		} else {
+			await SubProductModel.findByIdAndDelete(id);
+		}
+
+		res.status(200).json({
+			message: 'Removed!!!',
+		});
+	} catch (error: any) {
+		res.status(404).json({
+			message: error.message,
+		});
+	}
+};
+
+const updateSubProduct = async (req: any, res: any) => {
+	const { id } = req.query;
+	const body = req.body;
+	try {
+		await SubProductModel.findByIdAndUpdate(id, body);
+
+		res.status(200).json({
+			message: 'Updated!!!',
 		});
 	} catch (error: any) {
 		res.status(404).json({
@@ -348,17 +397,19 @@ const getFilterValues = async (req: any, res: any) => {
 	try {
 		const datas = await SubProductModel.find();
 
-		const colors: SelectModel[] = [];
+		const colors: string[] = [];
 		const sizes: SelectModel[] = [];
 		const prices: number[] = [];
 
 		if (datas.length > 0) {
 			datas.forEach((item) => {
-				item.color && colors.push({ label: item.color, value: item.color });
+				item.color && !colors.includes(item.color) && colors.push(item.color);
 				item.size && sizes.push({ label: item.size, value: item.size });
 				prices.push(item.price);
 			});
 		}
+
+		// console.log(datas);
 
 		res.status(200).json({
 			message: 'fafa',
@@ -378,45 +429,69 @@ const getFilterValues = async (req: any, res: any) => {
 const filterProducts = async (req: any, res: any) => {
 	const body = req.body;
 
-	const { color, size, price, categories } = body;
+	const { colors, size, price, categories } = body;
+	let filter: any = {};
+
+	if (colors && colors.length > 0) {
+		filter.color = { $all: colors };
+	}
+
+	if (size) {
+		filter.size = { $eq: size };
+	}
+
+	if (price && price.length > 0) {
+		filter['$and'] = [
+			{
+				price: { $lte: price[1] },
+			},
+			{
+				price: {
+					$gte: price[0],
+				},
+			},
+		];
+	}
+
+	// @bsdaoquang 1 - 20
+	// @daoquang-livecode 20 - nay
+
 	try {
-		const products = await ProductModel.find({
-			isDeleted: false,
-			categories: { $all: categories },
-		});
+		const subProducts = await SubProductModel.find(filter);
 
-		if (products.length > 0) {
-			const items = [];
+		if (categories) {
+		} else {
+		}
 
-			products.forEach(async (item) => {
-				const subItems = await SubProductModel.find({
-					productId: item._id,
-					color: color,
-					sizes: { $all: size },
-					price: {
-						$and: [
-							{
-								$lte: price[1],
-							},
-							{
-								$gte: price[0],
-							},
-						],
-					},
-				});
+		const productIds: string[] = [];
+		const products: any = [];
+		if (subProducts.length > 0) {
+			subProducts.forEach(
+				(item) =>
+					!productIds.includes(item.productId) &&
+					productIds.push(item.productId)
+			);
 
-				console.log(subItems);
-			});
+			productIds.forEach(async (id) => {
+				const product: any = await ProductModel.findById(id);
+				const children = subProducts.filter(
+					(element) => element.productId === id
+				);
+				const items = { ...product._doc, subItems: children };
 
-			res.status(200).json({
-				message: 'fafa',
-				data: [],
+				products.push(items);
+
+				if (products.length === productIds.length) {
+					res.status(200).json({
+						data: {
+							items: products,
+							totalItems: products.length,
+						},
+					});
+				}
 			});
 		} else {
-			res.status(200).json({
-				message: 'fafa',
-				data: [],
-			});
+			res.status(200).json({ data: [] });
 		}
 	} catch (error: any) {
 		res.status(404).json({
@@ -439,4 +514,6 @@ export {
 	updateProduct,
 	getFilterValues,
 	filterProducts,
+	removeSubProduct,
+	updateSubProduct,
 };

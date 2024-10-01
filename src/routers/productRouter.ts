@@ -13,8 +13,10 @@ import {
 	getProductDetail,
 	getProducts,
 	removeProduct,
+	removeSubProduct,
 	updateCategory,
 	updateProduct,
+	updateSubProduct,
 } from '../controllers/products';
 
 const router = Router();
@@ -25,6 +27,8 @@ router.get('/detail', getProductDetail);
 router.post('/add-sub-product', addSubProduct);
 router.delete('/delete', removeProduct);
 router.put('/update', updateProduct);
+router.delete('/remove-sub-product', removeSubProduct);
+router.put('/update-sub-product', updateSubProduct);
 
 // categories
 router.post('/add-category', addCategory);
