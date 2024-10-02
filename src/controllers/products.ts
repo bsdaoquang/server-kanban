@@ -28,7 +28,7 @@ const addCategory = async (req: any, res: any) => {
 
 		res.status(200).json({
 			message: 'Products',
-			data: [],
+			data: newCate,
 		});
 	} catch (error: any) {
 		res.status(404).json({
