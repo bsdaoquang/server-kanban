@@ -7,7 +7,6 @@ import {
 	refreshToken,
 	register,
 } from '../controllers/user';
-import { verifyToken } from '../middlewares/verifyToken';
 
 const router = Router();
 

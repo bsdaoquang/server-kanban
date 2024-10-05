@@ -19,6 +19,7 @@ export const verifyToken = (req: any, res: any, next: any) => {
 		if (!verfy) {
 			throw new Error('Invalid token');
 		}
+
 		req._id = verfy._id;
 
 		next();
