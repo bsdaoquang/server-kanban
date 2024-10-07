@@ -7,6 +7,7 @@ import userRouter from './src/routers/user';
 import storageRouter from './src/routers/storage';
 import productRouter from './src/routers/productRouter';
 import supplierRouter from './src/routers/supplier';
+import customerRouter from './src/routers/customerRouter';
 import cors from 'cors';
 import { verifyToken } from './src/middlewares/verifyToken';
 dotenv.config();
@@ -19,6 +20,7 @@ app.use(express.json());
 app.use(cors());
 
 app.use('/auth', userRouter);
+app.use('/customers', customerRouter);
 
 app.use(verifyToken);
 app.use('/storage', storageRouter);

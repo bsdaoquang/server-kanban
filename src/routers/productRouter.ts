@@ -30,7 +30,6 @@ router.put('/update', updateProduct);
 router.delete('/remove-sub-product', removeSubProduct);
 router.put('/update-sub-product', updateSubProduct);
 
-// categories
 router.post('/add-category', addCategory);
 router.get('/get-categories', getCategories);
 router.get('/categories/detail', getCategoryDetail);
