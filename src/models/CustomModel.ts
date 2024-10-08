@@ -13,6 +13,23 @@ const scheme = new Schema({
 		required: true,
 		type: String,
 	},
+	isDeleted: {
+		type: Boolean,
+		default: false,
+	},
+	isVerify: {
+		type: Boolean,
+		default: false,
+	},
+	verifyCode: String,
+	createdAt: {
+		type: Date,
+		default: Date.now,
+	},
+	updatedAt: {
+		type: Date,
+		default: Date.now,
+	},
 });
 
 const CustomerModel = mongoose.model('customers', scheme);

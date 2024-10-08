@@ -6,7 +6,7 @@ export const generatorRandomText = (num: number) => {
 	let text = '';
 
 	for (let index = 0; index < characters.length; index++) {
-		if (text.length <= (num ? num : 10)) {
+		if (text.length < (num ? num : 10)) {
 			const str = characters[Math.floor(Math.random() * characters.length)];
 			text += str;
 		}
