@@ -15,7 +15,7 @@ const scheme = new Schema({
 	},
 	isDeleted: {
 		type: Boolean,
-		default: false,
+		default: true,
 	},
 	isVerify: {
 		type: Boolean,
