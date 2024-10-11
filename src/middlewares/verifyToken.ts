@@ -11,16 +11,17 @@ export const verifyToken = (req: any, res: any, next: any) => {
 			throw new Error('Không có quyền');
 		}
 
-		const verfy: any = jwt.verify(
+		const verify: any = jwt.verify(
 			accesstoken,
 			process.env.SECRET_KEY as string
 		);
 
-		if (!verfy) {
+		if (!verify) {
 			throw new Error('Invalid token');
 		}
 
-		req._id = verfy._id;
+		// const exp = verify.exp;
+		// req._id = verify._id;
 
 		next();
 	} catch (error: any) {

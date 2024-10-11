@@ -21,11 +21,11 @@ app.use(cors());
 
 app.use('/auth', userRouter);
 app.use('/customers', customerRouter);
+app.use('/products', productRouter);
 
 app.use(verifyToken);
 app.use('/storage', storageRouter);
 app.use('/supplier', supplierRouter);
-app.use('/products', productRouter);
 
 const connectDB = async () => {
 	try {

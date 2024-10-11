@@ -10,6 +10,8 @@ export const getAccesstoken = async (payload: {
 	email: string;
 	rule?: number;
 }) => {
-	const token = jwt.sign(payload, process.env.SECRET_KEY as string);
+	const token = jwt.sign(payload, process.env.SECRET_KEY as string, {
+		// expiresIn: '10m',
+	});
 	return token;
 };

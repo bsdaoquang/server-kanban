@@ -15,7 +15,6 @@ const getVerifiCode = async (req: any, res: any) => {
 			throw new Error('User is not found!!');
 		}
 		const verifyCode = customer._doc.verifyCode;
-		console.log(verifyCode, code);
 		if (code !== verifyCode) {
 			throw new Error('Code is invalid!!!');
 		}
@@ -120,5 +119,39 @@ const create = async (req: any, res: any) => {
 		});
 	}
 };
+const login = async (req: any, res: any) => {
+	const body = req.body;
 
-export { create, getVerifiCode, resendCode };
+	const { email, password } = body;
+
+	try {
+		const customer: any = await CustomerModel.findOne({ email });
+
+		if (!customer) {
+			throw new Error('User not found!!!');
+		}
+
+		const isMatchPassword = await bcrypt.compare(password, customer.password);
+
+		if (!isMatchPassword) {
+			throw new Error('Email/Password is not correct!!!');
+		}
+
+		const item = customer._doc;
+
+		delete item.password;
+		const accesstoken = await getAccesstoken({ _id: item._id, email });
+		item.accesstoken = accesstoken;
+
+		res.status(200).json({
+			message: 'login successfully!!!',
+			data: item,
+		});
+	} catch (error: any) {
+		res.status(404).json({
+			message: error.message,
+		});
+	}
+};
+
+export { create, getVerifiCode, resendCode, login };
