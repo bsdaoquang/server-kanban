@@ -37,13 +37,3 @@ const scheme = new Schema({
 
 const ProductModel = mongoose.model('products', scheme);
 export default ProductModel;
-
-/*
-	1 link web đã deploy
-	link github của web đó
-	link github của các bạn 
-
-	zalo / messenger 
-
-	dateline: Chủ nhật
-*/

@@ -453,9 +453,6 @@ const filterProducts = async (req: any, res: any) => {
 		];
 	}
 
-	// @bsdaoquang 1 - 20
-	// @daoquang-livecode 20 - nay
-
 	try {
 		const subProducts = await SubProductModel.find(filter);
 
