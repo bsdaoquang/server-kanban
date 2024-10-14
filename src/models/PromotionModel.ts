@@ -36,3 +36,5 @@ const scheme = new Schema(
 );
 
 const PromotionModel = mongoose.model('promotions', scheme);
+
+export default PromotionModel;

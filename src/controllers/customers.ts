@@ -119,6 +119,7 @@ const create = async (req: any, res: any) => {
 		});
 	}
 };
+
 const login = async (req: any, res: any) => {
 	const body = req.body;
 

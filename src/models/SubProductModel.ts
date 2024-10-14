@@ -15,6 +15,9 @@ const scheme = new Schema(
 			default: 0,
 			required: true,
 		},
+		discount: {
+			type: Number,
+		},
 		productId: {
 			type: String,
 			required: true,

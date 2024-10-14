@@ -9,6 +9,7 @@ import productRouter from './src/routers/productRouter';
 import supplierRouter from './src/routers/supplier';
 import customerRouter from './src/routers/customerRouter';
 import promotionRouter from './src/routers/promotionRouter';
+import nettruyenRouter from './src/routers/nettruyenRouter';
 import cors from 'cors';
 import { verifyToken } from './src/middlewares/verifyToken';
 dotenv.config();
@@ -19,7 +20,14 @@ const app = express();
 
 app.use(express.json());
 app.use(cors());
+app.use((req, res, next) => {
+	res.header('Access-Control-Allow-Origin', '*');
+	res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
+	res.header('Access-Control-Allow-Headers', 'Content-Type');
+	next();
+});
 
+app.use('/nettruyen', nettruyenRouter);
 app.use('/auth', userRouter);
 app.use('/customers', customerRouter);
 app.use('/products', productRouter);
