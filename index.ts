@@ -31,9 +31,9 @@ app.use('/nettruyen', nettruyenRouter);
 app.use('/auth', userRouter);
 app.use('/customers', customerRouter);
 app.use('/products', productRouter);
+app.use('/promotions', promotionRouter);
 
 app.use(verifyToken);
-app.use('/promotions', promotionRouter);
 app.use('/storage', storageRouter);
 app.use('/supplier', supplierRouter);
 

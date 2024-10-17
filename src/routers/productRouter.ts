@@ -26,9 +26,9 @@ router.get('/detail', getProductDetail);
 router.get('/', getProducts);
 router.get('/get-filter-values', getFilterValues);
 router.get('/categories/detail', getCategoryDetail);
+router.get('/get-categories', getCategories);
 
 router.use(verifyToken);
-router.get('/get-categories', getCategories);
 
 router.post('/add-new', addProduct);
 router.post('/add-sub-product', addSubProduct);

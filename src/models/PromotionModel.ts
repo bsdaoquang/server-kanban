@@ -31,6 +31,10 @@ const scheme = new Schema(
 		},
 		endAt: Date,
 		imageURL: String,
+		isDeleted: {
+			type: Boolean,
+			default: false,
+		},
 	},
 	{ timestamps: true }
 );

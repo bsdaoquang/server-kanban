@@ -20,9 +20,10 @@ const addNew = async (req: any, res: any) => {
 };
 
 const getPromotions = async (req: any, res: any) => {
-	const body = req.body;
+	const { limit } = req.query;
+
 	try {
-		const items = await PromotionModel.find();
+		const items = await PromotionModel.find({ isDeleted: false }).limit(limit);
 
 		res.status(200).json({
 			message: 'Added',
