@@ -2,7 +2,7 @@
 
 import CategoryModel from '../models/CategortModel';
 import ProductModel from '../models/ProductModel';
-import SubProductModel from '../models/SubProductModel';
+import SubProductModel, { BillProductModel } from '../models/SubProductModel';
 
 interface SelectModel {
 	label: string;
@@ -235,6 +235,26 @@ const getProducts = async (req: any, res: any) => {
 				message: 'Products',
 				data: [],
 			});
+		}
+	} catch (error: any) {
+		res.status(404).json({
+			message: error.message,
+		});
+	}
+};
+const getBestSellers = async (req: any, res: any) => {
+	try {
+		// lấy tất cả sản phẩm đã bán
+		// push id vào 1 mảng
+		// Lấy 10 id bị lặp lại nhiều nhất
+
+		const products = await BillProductModel.find();
+
+		if (products.length > 0) {
+		} else {
+			const items = await ProductModel.find().limit(8);
+
+			res.status(200).json({ data: items });
 		}
 	} catch (error: any) {
 		res.status(404).json({
@@ -513,4 +533,5 @@ export {
 	filterProducts,
 	removeSubProduct,
 	updateSubProduct,
+	getBestSellers,
 };
