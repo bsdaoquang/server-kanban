@@ -242,19 +242,29 @@ const getProducts = async (req: any, res: any) => {
 		});
 	}
 };
+
+const getMinMaxPrice = async (id: string) => {
+	const subItems = await SubProductModel.find({ productId: id });
+
+	const nums = subItems.map((item) => item.price);
+
+	return [Math.min(...nums), Math.max(...nums)];
+};
+
 const getBestSellers = async (req: any, res: any) => {
 	try {
-		// lấy tất cả sản phẩm đã bán
-		// push id vào 1 mảng
-		// Lấy 10 id bị lặp lại nhiều nhất
-
 		const products = await BillProductModel.find();
 
 		if (products.length > 0) {
 		} else {
 			const items = await ProductModel.find().limit(8);
+			const data: any = [];
 
-			res.status(200).json({ data: items });
+			items.forEach(async (item: any) => {
+				data.push({ ...item._doc, price: await getMinMaxPrice(item._id) });
+
+				data.length === items.length && res.status(200).json({ data });
+			});
 		}
 	} catch (error: any) {
 		res.status(404).json({
