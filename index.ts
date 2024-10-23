@@ -10,6 +10,8 @@ import supplierRouter from './src/routers/supplier';
 import customerRouter from './src/routers/customerRouter';
 import promotionRouter from './src/routers/promotionRouter';
 import nettruyenRouter from './src/routers/nettruyenRouter';
+import cartRouter from './src/routers/cartRouter';
+
 import cors from 'cors';
 import { verifyToken } from './src/middlewares/verifyToken';
 dotenv.config();
@@ -36,6 +38,7 @@ app.use('/promotions', promotionRouter);
 app.use(verifyToken);
 app.use('/storage', storageRouter);
 app.use('/supplier', supplierRouter);
+app.use('/carts', cartRouter);
 
 const connectDB = async () => {
 	try {

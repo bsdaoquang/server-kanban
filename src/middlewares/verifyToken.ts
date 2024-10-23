@@ -19,6 +19,9 @@ export const verifyToken = (req: any, res: any, next: any) => {
 		if (!verify) {
 			throw new Error('Invalid token');
 		}
+
+		req.uid = verify._id;
+
 		next();
 	} catch (error: any) {
 		res.status(401).json({ error: error.message });
