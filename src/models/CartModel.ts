@@ -14,6 +14,7 @@ const scheme = new Schema({
 		type: String,
 		required: true,
 	},
+	image: String,
 	size: String,
 	color: String,
 	price: Number,
