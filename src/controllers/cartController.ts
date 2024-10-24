@@ -39,4 +39,15 @@ const getCartItems = async (req: any, res: any) => {
 	}
 };
 
-export { addProduct, getCartItems };
+const removeCartItem = async (req: any, res: any) => {
+	const { id } = req.query;
+	try {
+		await CartModel.findByIdAndDelete(id);
+
+		res.status(200).json({ message: 'fafa', data: [] });
+	} catch (error: any) {
+		res.status(404).json({ message: error.message });
+	}
+};
+
+export { addProduct, getCartItems, removeCartItem };
