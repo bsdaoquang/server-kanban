@@ -20,6 +20,7 @@ const scheme = new Schema({
 	price: Number,
 	qty: Number,
 	productId: String,
+	title: String,
 });
 
 const CartModel = mongoose.model('carts', scheme);

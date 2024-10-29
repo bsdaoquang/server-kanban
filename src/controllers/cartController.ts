@@ -19,10 +19,23 @@ const addProduct = async (req: any, res: any) => {
 			const item = new CartModel(body);
 			await item.save();
 			res.status(200).json({
-				data: [],
+				data: item,
 				message: 'Update cart to DB!!!',
 			});
 		}
+	} catch (error: any) {
+		res.status(404).json({ message: error.message });
+	}
+};
+const updateProductInCart = async (req: any, res: any) => {
+	const { id } = req.query;
+
+	const body = req.body;
+
+	try {
+		await CartModel.findByIdAndUpdate(id, body);
+
+		res.status(200).json({ message: 'Done', data: [] });
 	} catch (error: any) {
 		res.status(404).json({ message: error.message });
 	}
@@ -50,4 +63,4 @@ const removeCartItem = async (req: any, res: any) => {
 	}
 };
 
-export { addProduct, getCartItems, removeCartItem };
+export { addProduct, getCartItems, removeCartItem, updateProductInCart };
