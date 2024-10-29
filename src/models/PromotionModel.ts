@@ -29,6 +29,9 @@ const scheme = new Schema(
 			type: Date,
 			required: true,
 		},
+		productIds: {
+			type: [String],
+		},
 		endAt: Date,
 		imageURL: String,
 		isDeleted: {
