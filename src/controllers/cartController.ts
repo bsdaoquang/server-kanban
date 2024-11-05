@@ -1,5 +1,7 @@
 /** @format */
 
+import { query } from 'express';
+import AddressModel from '../models/AddressModel';
 import CartModel from '../models/CartModel';
 
 const addProduct = async (req: any, res: any) => {
@@ -27,6 +29,7 @@ const addProduct = async (req: any, res: any) => {
 		res.status(404).json({ message: error.message });
 	}
 };
+
 const updateProductInCart = async (req: any, res: any) => {
 	const { id } = req.query;
 
@@ -63,4 +66,74 @@ const removeCartItem = async (req: any, res: any) => {
 	}
 };
 
-export { addProduct, getCartItems, removeCartItem, updateProductInCart };
+const addNewAddress = async (req: any, res: any) => {
+	const body = req.body;
+
+	const { isDefault } = body;
+
+	const uid = req.uid;
+	try {
+		const item = new AddressModel(body);
+		await item.save();
+		if (isDefault) {
+			const defaultAddressItem = await AddressModel.findOne({
+				$and: [{ createdBy: uid }, { isDefault: true }],
+			});
+
+			if (defaultAddressItem) {
+				await AddressModel.findByIdAndUpdate(defaultAddressItem._id, {
+					isDefault: false,
+				});
+			}
+		} else {
+			res.status(200).json({ message: 'fafa', data: item });
+		}
+	} catch (error: any) {
+		res.status(404).json({ message: error.message });
+	}
+};
+
+const getAddressByUser = async (req: any, res: any) => {
+	const id = req.uid;
+	try {
+		const items = await AddressModel.find({ createdBy: id });
+		res.status(200).json({ message: 'fafa', data: items });
+	} catch (error: any) {
+		res.status(404).json({ message: error.message });
+	}
+};
+
+const deleteAddress = async (req: any, res: any) => {
+	const { id } = req.query;
+	try {
+		await AddressModel.findByIdAndDelete(id);
+		res.status(200).json({ message: 'Deleted' });
+	} catch (error: any) {
+		res.status(404).json({ message: error.message });
+	}
+};
+
+const updateAddress = async (req: any, res: any) => {
+	const body = req.body;
+	const { id } = req.query;
+	try {
+		await AddressModel.findByIdAndUpdate(id, body);
+
+		const item = await AddressModel.findById(id);
+
+		res.status(200).json({ message: 'Update', data: item });
+	} catch (error: any) {
+		res.status(404).json({ message: error.message });
+	}
+};
+
+export {
+	addProduct,
+	getCartItems,
+	removeCartItem,
+	updateProductInCart,
+	addNewAddress,
+	getAddressByUser,
+	deleteAddress,
+	updateAddress,
+};
