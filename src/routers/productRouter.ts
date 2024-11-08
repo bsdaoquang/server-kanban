@@ -13,6 +13,7 @@ import {
 	getFilterValues,
 	getProductDetail,
 	getProducts,
+	getRelatedProducts,
 	removeProduct,
 	removeSubProduct,
 	updateCategory,
@@ -29,6 +30,7 @@ router.get('/get-filter-values', getFilterValues);
 router.get('/categories/detail', getCategoryDetail);
 router.get('/get-categories', getCategories);
 router.get('/get-best-seller', getBestSellers);
+router.get('/get-related-products', getRelatedProducts);
 
 router.use(verifyToken);
 

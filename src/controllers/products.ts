@@ -527,6 +527,43 @@ const filterProducts = async (req: any, res: any) => {
 		});
 	}
 };
+const getRelatedProducts = async (req: any, res: any) => {
+	const { id } = req.query;
+	try {
+		const product = await ProductModel.findById(id);
+
+		if (!product) {
+			throw new Error('Product not found');
+		}
+
+		const categoryId =
+			product.categories && product.categories.length > 0
+				? product.categories[0]
+				: undefined;
+
+		if (!categoryId) {
+			throw new Error('Categories not found!');
+		}
+
+		const items = await ProductModel.find({ categories: { $in: categoryId } });
+
+		const datas = items.length > 4 ? items.splice(0, 4) : items;
+
+		const products: any = [];
+
+		datas.forEach(async (item: any) => {
+			products.push({ ...item._doc, price: await getMinMaxPrice(item._id) });
+
+			products.length === datas.length &&
+				res.status(200).json({ data: products });
+		});
+		// res.status(200).json({ data: products });
+	} catch (error: any) {
+		res.status(404).json({
+			message: error.message,
+		});
+	}
+};
 
 export {
 	addCategory,
@@ -545,4 +582,5 @@ export {
 	removeSubProduct,
 	updateSubProduct,
 	getBestSellers,
+	getRelatedProducts,
 };
