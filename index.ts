@@ -10,6 +10,7 @@ import supplierRouter from './src/routers/supplier';
 import customerRouter from './src/routers/customerRouter';
 import promotionRouter from './src/routers/promotionRouter';
 import nettruyenRouter from './src/routers/nettruyenRouter';
+import rewiewRouter from './src/routers/reviewRouter';
 import cartRouter from './src/routers/cartRouter';
 
 import cors from 'cors';
@@ -34,6 +35,7 @@ app.use('/auth', userRouter);
 app.use('/customers', customerRouter);
 app.use('/products', productRouter);
 app.use('/promotions', promotionRouter);
+app.use('/reviews', rewiewRouter);
 
 app.use(verifyToken);
 app.use('/storage', storageRouter);
