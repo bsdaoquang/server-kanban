@@ -26,6 +26,7 @@ const scheme = new Schema({
 		type: Date,
 		default: Date.now,
 	},
+	photoURL: String,
 	updatedAt: {
 		type: Date,
 		default: Date.now,

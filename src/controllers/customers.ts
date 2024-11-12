@@ -83,6 +83,7 @@ const create = async (req: any, res: any) => {
 
 	try {
 		const user = await CustomerModel.findOne({ email: body.email });
+		console.log(user);
 		if (user) {
 			throw new Error('User is existing!!!!');
 		}
@@ -155,4 +156,24 @@ const login = async (req: any, res: any) => {
 	}
 };
 
-export { create, getVerifiCode, resendCode, login };
+const getProfile = async (req: any, res: any) => {
+	const { id } = req.query;
+
+	try {
+		const user: any = await CustomerModel.findById(id).select('-password');
+		if (!user) {
+			throw new Error('User not found');
+		}
+
+		res.status(200).json({
+			message: 'Profile',
+			data: user,
+		});
+	} catch (error: any) {
+		res.status(404).json({
+			message: error.message,
+		});
+	}
+};
+
+export { create, getVerifiCode, resendCode, login, getProfile };
