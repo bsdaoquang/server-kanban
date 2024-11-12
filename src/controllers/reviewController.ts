@@ -30,4 +30,21 @@ const getAll = async (req: any, res: any) => {
 		});
 	}
 };
-export { addnew, getAll };
+
+const update = async (req: any, res: any) => {
+	const { id } = req.query;
+	const body = req.body;
+	try {
+		await ReviewModel.findByIdAndUpdate(id, body);
+
+		res.status(200).json({
+			message: 'Updated',
+		});
+	} catch (error: any) {
+		res.status(404).json({
+			message: error.message,
+		});
+	}
+};
+
+export { addnew, getAll, update };

@@ -22,8 +22,12 @@ const scheme = new Schema(
 		},
 		images: [String],
 		like: {
-			type: Number,
-			default: 0,
+			type: [String],
+			default: [],
+		},
+		dislike: {
+			type: [String],
+			default: [],
 		},
 		isDeleted: {
 			type: Boolean,
