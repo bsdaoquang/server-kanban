@@ -21,8 +21,27 @@ const getAll = async (req: any, res: any) => {
 	const { id, limit } = req.query;
 	try {
 		const items = await ReviewModel.find({ parentId: id }).limit(limit ?? 5);
+
 		res.status(200).json({
 			data: items,
+		});
+	} catch (error: any) {
+		res.status(404).json({
+			message: error.message,
+		});
+	}
+};
+
+const getData = async (req: any, res: any) => {
+	const { id } = req.query;
+	try {
+		const items = await ReviewModel.find({ parentId: id });
+
+		res.status(200).json({
+			data: {
+				count: items.reduce((a, b) => a + b.star, 0) / items.length,
+				total: items.length,
+			},
 		});
 	} catch (error: any) {
 		res.status(404).json({
@@ -47,4 +66,4 @@ const update = async (req: any, res: any) => {
 	}
 };
 
-export { addnew, getAll, update };
+export { addnew, getAll, update, getData };
