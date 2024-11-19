@@ -189,7 +189,7 @@ const addProduct = async (req: any, res: any) => {
 };
 
 const getProducts = async (req: any, res: any) => {
-	const { page, pageSize, title } = req.query;
+	const { page, pageSize, title, catIds } = req.query;
 
 	await checkDeletedProduct();
 
@@ -201,16 +201,23 @@ const getProducts = async (req: any, res: any) => {
 		filter.slug = { $regex: title };
 	}
 
+	if (catIds) {
+		const categoriesIds = catIds.includes(',') ? catIds.split(',') : [catIds];
+		filter.categories = { $in: categoriesIds };
+	}
+
 	try {
 		const skip = (page - 1) * pageSize;
 
 		const products = await ProductModel.find(filter).skip(skip).limit(pageSize);
+		const count = await ProductModel.find(filter);
 
 		const total = await ProductModel.find({
 			isDeleted: false,
 		});
 
 		const items: any = [];
+		const pageCount = Math.ceil(count.length / pageSize);
 
 		if (products.length > 0) {
 			products.forEach(async (item: any) => {
@@ -221,13 +228,17 @@ const getProducts = async (req: any, res: any) => {
 
 				items.push({
 					...item._doc,
-					subItems: children,
+					subItems: children ?? [],
 				});
 
 				items.length === products.length &&
 					res.status(200).json({
 						message: 'Products',
-						data: { items, totalItems: total.length },
+						data: {
+							items,
+							totalItems: total.length,
+							pageCount,
+						},
 					});
 			});
 		} else {

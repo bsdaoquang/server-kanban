@@ -1,5 +1,8 @@
 /** @format */
 
+// [a, b, a, a, c, r, f, a, b, c, f, h, g]
+// [a, b, c, f]
+
 import mongoose, { Schema } from 'mongoose';
 
 const scheme = new Schema({
