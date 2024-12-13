@@ -3,6 +3,7 @@
 import { query } from 'express';
 import AddressModel from '../models/AddressModel';
 import CartModel from '../models/CartModel';
+import { constants } from 'os';
 
 const addProduct = async (req: any, res: any) => {
 	const { id } = req.query;
@@ -63,6 +64,27 @@ const removeCartItem = async (req: any, res: any) => {
 		res.status(200).json({ message: 'fafa', data: [] });
 	} catch (error: any) {
 		res.status(404).json({ message: error.message });
+	}
+};
+
+const clearCardByUser = async (req: any, res: any) => {
+	const uid = req.uid;
+
+	try {
+		const cartItems = await CartModel.find({ createdBy: uid });
+
+		cartItems.forEach(
+			async (item) => await CartModel.findByIdAndDelete(item._id)
+		);
+
+		res.status(200).json({
+			message: 'Đã xóa đơn hàng',
+			data: [],
+		});
+	} catch (error: any) {
+		res.status(404).json({
+			message: error.message,
+		});
 	}
 };
 
@@ -136,4 +158,5 @@ export {
 	getAddressByUser,
 	deleteAddress,
 	updateAddress,
+	clearCardByUser,
 };

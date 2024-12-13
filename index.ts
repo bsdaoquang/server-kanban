@@ -12,6 +12,7 @@ import promotionRouter from './src/routers/promotionRouter';
 import nettruyenRouter from './src/routers/nettruyenRouter';
 import rewiewRouter from './src/routers/reviewRouter';
 import cartRouter from './src/routers/cartRouter';
+import paymentRouter from './src/routers/paymentRouters';
 
 import cors from 'cors';
 import { verifyToken } from './src/middlewares/verifyToken';
@@ -41,6 +42,7 @@ app.use(verifyToken);
 app.use('/storage', storageRouter);
 app.use('/supplier', supplierRouter);
 app.use('/carts', cartRouter);
+app.use('/payments', paymentRouter);
 
 const connectDB = async () => {
 	try {

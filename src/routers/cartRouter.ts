@@ -4,6 +4,7 @@ import { Router } from 'express';
 import {
 	addNewAddress,
 	addProduct,
+	clearCardByUser,
 	deleteAddress,
 	getAddressByUser,
 	getCartItems,
@@ -22,5 +23,6 @@ router.post('/add-new-address', addNewAddress);
 router.get('/get-address', getAddressByUser);
 router.delete('/remove-address', deleteAddress);
 router.put('/update-address', updateAddress);
+router.get('/clear-carts', clearCardByUser);
 
 export default router;
