@@ -176,4 +176,29 @@ const getProfile = async (req: any, res: any) => {
 	}
 };
 
-export { create, getVerifiCode, resendCode, login, getProfile };
+const update = async (req: any, res: any) => {
+	const body = req.body;
+	const id = req.uid;
+
+	try {
+		const user = await CustomerModel.findById(id);
+
+		if (!user) {
+			throw new Error('User not found');
+		}
+		await CustomerModel.findByIdAndUpdate(id, body);
+
+		const newUser = await CustomerModel.findById(id).select('-password');
+
+		res.status(200).json({
+			message: 'fafa',
+			data: newUser,
+		});
+	} catch (error: any) {
+		res.status(404).json({
+			message: error.message,
+		});
+	}
+};
+
+export { create, getVerifiCode, resendCode, login, getProfile, update };

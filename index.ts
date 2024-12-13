@@ -45,7 +45,6 @@ app.use('/carts', cartRouter);
 const connectDB = async () => {
 	try {
 		await mongoose.connect(dbURL);
-
 		console.log(`Connect to db successfully!!!`);
 	} catch (error) {
 		console.log(`Can not connect to db ${error}`);

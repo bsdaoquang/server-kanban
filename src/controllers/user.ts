@@ -163,4 +163,27 @@ const refreshToken = async (req: any, res: any) => {
 	}
 };
 
-export { register, login, loginWithGoogle, refreshToken };
+const update = async (req: any, res: any) => {
+	const body = req.body;
+	const id = req.uid;
+
+	try {
+		const user = await UserModel.findById(id);
+		console.log(user);
+		if (!user) {
+			throw new Error('User not found');
+		}
+		await UserModel.findByIdAndUpdate(id, body);
+
+		res.status(200).json({
+			message: 'fafa',
+			data: user,
+		});
+	} catch (error: any) {
+		res.status(404).json({
+			message: error.message,
+		});
+	}
+};
+
+export { register, login, loginWithGoogle, refreshToken, update };
