@@ -18,6 +18,10 @@ const scheme = new Schema(
 		discount: {
 			type: Number,
 		},
+		cost: {
+			type: Number,
+			default: 0,
+		},
 		productId: {
 			type: String,
 			required: true,

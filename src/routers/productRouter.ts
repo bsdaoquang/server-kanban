@@ -7,11 +7,13 @@ import {
 	addSubProduct,
 	deleteCategories,
 	filterProducts,
+	getAllSubProducts,
 	getBestSellers,
 	getCategories,
 	getCategoryDetail,
 	getFilterValues,
 	getProductDetail,
+	getProductOptions,
 	getProducts,
 	getRelatedProducts,
 	removeProduct,
@@ -36,6 +38,7 @@ router.use(verifyToken);
 
 router.post('/add-new', addProduct);
 router.post('/add-sub-product', addSubProduct);
+router.get('/sub-products', getAllSubProducts);
 router.delete('/delete', removeProduct);
 router.put('/update', updateProduct);
 router.delete('/remove-sub-product', removeSubProduct);
@@ -44,5 +47,6 @@ router.post('/add-category', addCategory);
 router.delete('/delete-category', deleteCategories);
 router.put('/update-category', updateCategory);
 router.post('/filter-products', filterProducts);
+router.get('/get-product-options', getProductOptions);
 
 export default router;

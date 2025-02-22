@@ -1,5 +1,6 @@
 /** @format */
 
+import e, { Request, Response } from 'express';
 import CategoryModel from '../models/CategortModel';
 import ProductModel from '../models/ProductModel';
 import SubProductModel, { BillProductModel } from '../models/SubProductModel';
@@ -216,37 +217,41 @@ const getProducts = async (req: any, res: any) => {
 			isDeleted: false,
 		});
 
-		const items: any = [];
 		const pageCount = Math.ceil(count.length / pageSize);
 
-		if (products.length > 0) {
-			products.forEach(async (item: any) => {
-				const children = await SubProductModel.find({
-					productId: item._id,
-					isDeleted: false,
-				});
-
-				items.push({
-					...item._doc,
-					subItems: children ?? [],
-				});
-
-				items.length === products.length &&
-					res.status(200).json({
-						message: 'Products',
-						data: {
-							items,
-							totalItems: total.length,
-							pageCount,
-						},
-					});
+		const promises = products.map(async (item: any) => {
+			const children = await SubProductModel.find({
+				productId: item._id,
+				isDeleted: false,
 			});
-		} else {
-			res.status(200).json({
-				message: 'Products',
-				data: [],
-			});
-		}
+
+			const cats = item._doc.categories;
+			const categories =
+				cats.length > 0
+					? cats.map(async (id: string) => {
+							const cat = await CategoryModel.findById(id);
+
+							return cat;
+					  })
+					: [];
+
+			const dataCategories = await Promise.all(categories);
+			return {
+				...item._doc,
+				categories: dataCategories,
+				subItems: children ?? [],
+			};
+		});
+
+		const items = await Promise.all(promises);
+		res.status(200).json({
+			message: 'Products',
+			data: {
+				items,
+				totalItems: total.length,
+				pageCount,
+			},
+		});
 	} catch (error: any) {
 		res.status(404).json({
 			message: error.message,
@@ -382,6 +387,18 @@ const addSubProduct = async (req: any, res: any) => {
 	} catch (error: any) {
 		res.status(404).json({
 			message: error.message,
+		});
+	}
+};
+
+const getAllSubProducts = async (_req: Request, res: Response) => {
+	try {
+		res.status(200).json({
+			message: 'Update all OK',
+		});
+	} catch (error: any) {
+		res.status(404).json({
+			error: error.message,
 		});
 	}
 };
@@ -576,6 +593,28 @@ const getRelatedProducts = async (req: any, res: any) => {
 	}
 };
 
+const getProductOptions = async (_req: any, res: any) => {
+	try {
+		const items = await ProductModel.find({
+			isDeleted: false,
+		});
+
+		const data = items.map((item) => ({
+			value: item._id,
+			label: item.title,
+		}));
+
+		res.status(200).json({
+			data,
+			message: 'OK',
+		});
+	} catch (error: any) {
+		res.status(404).json({
+			message: error.message,
+		});
+	}
+};
+
 export {
 	addCategory,
 	deleteCategories,
@@ -594,4 +633,6 @@ export {
 	updateSubProduct,
 	getBestSellers,
 	getRelatedProducts,
+	getAllSubProducts,
+	getProductOptions,
 };

@@ -22,7 +22,8 @@ const scheme = new Schema(
 		},
 		status: {
 			type: Number,
-			default: 0,
+			default: 0, // 0: pending, 1: shipping, 2: success, 3: cancel
+			enum: [0, 1, 2, 3],
 		},
 		customer_id: {
 			type: String,

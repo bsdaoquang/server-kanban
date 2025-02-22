@@ -10,6 +10,8 @@ const addNew = async (req: any, res: any) => {
 
 		await item.save();
 
+		// gửi email cho tất cả customer thông qua email, kèm link của chương trình khuyến mãi
+
 		res.status(200).json({
 			message: 'Added',
 			data: item,

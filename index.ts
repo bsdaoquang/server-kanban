@@ -14,6 +14,8 @@ import rewiewRouter from './src/routers/reviewRouter';
 import cartRouter from './src/routers/cartRouter';
 import paymentRouter from './src/routers/paymentRouters';
 import notificationsRouter from './src/routers/notificationsRouter';
+import orderRouter from './src/routers/orderRouter';
+import adminRouter from './src/routers/adminRouter';
 
 import cors from 'cors';
 import { verifyToken } from './src/middlewares/verifyToken';
@@ -45,6 +47,8 @@ app.use('/supplier', supplierRouter);
 app.use('/carts', cartRouter);
 app.use('/payments', paymentRouter);
 app.use('/notifications', notificationsRouter);
+app.use('/orders', orderRouter);
+app.use('/admin', adminRouter);
 
 const connectDB = async () => {
 	try {

@@ -1,2 +1,6 @@
 /node_modules
 .env
+/dist
+.yarn
+.pnp.cjs
+.pnp.loader.mjs
