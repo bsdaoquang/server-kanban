@@ -5,6 +5,9 @@ import OrderModel from '../models/OrderModel';
 import BillModel from '../models/BillModel';
 import ProductModel from '../models/ProductModel';
 import SubProductModel from '../models/SubProductModel';
+import moment from 'moment';
+import CategoryModel from '../models/CategortModel';
+const now = moment().format('YYYY-MM-DD');
 
 const getTimes = (timeType: string) => {
 	let start;
@@ -183,4 +186,188 @@ const getTopSellingAndLowQuantity = async (req: Request, res: Response) => {
 	}
 };
 
-export { getOrderAndPurchase, getTopSellingAndLowQuantity };
+const getBillsAndOrders = async (dates?: { start: Date; end: Date }) => {
+	const filter = dates
+		? {
+				createdAt: {
+					$gte: dates.start,
+					$lt: dates.end,
+				},
+		  }
+		: {};
+
+	try {
+		const bills = await BillModel.find(filter);
+		const orders = await OrderModel.find(filter);
+
+		return { bills, orders };
+	} catch (error) {
+		console.log(error);
+		return { bills: [], orders: [] };
+	}
+};
+
+const getTotalProfit = async (req: Request, res: Response) => {
+	const datas = await getBillsAndOrders();
+
+	const { bills, orders } = datas;
+
+	const revenue =
+		bills.reduce((a, b) => a + b.total, 0) -
+		orders.reduce((a, b) => a + b.total, 0);
+
+	const startMonth = moment().startOf('month').toDate();
+	const endMonth = moment().endOf('month').toDate();
+	const startYear = moment().startOf('year').toDate();
+	const endYear = moment().endOf('year').toDate();
+
+	const datasOfMonth = await getBillsAndOrders({
+		start: startMonth,
+		end: endMonth,
+	});
+	const datasOfYear = await getBillsAndOrders({
+		start: startYear,
+		end: endYear,
+	});
+
+	try {
+		res.status(200).json({
+			message: 'Get total profit successfully',
+			data: {
+				profitMonth:
+					datasOfMonth.bills.reduce((a, b) => a + b.total, 0) -
+					datasOfMonth.orders.reduce((a, b) => a + b.total, 0),
+				profitYear:
+					datasOfYear.bills.reduce((a, b) => a + b.total, 0) -
+					datasOfYear.orders.reduce((a, b) => a + b.total, 0),
+				bills,
+				orders,
+				revenue,
+			},
+		});
+	} catch (error: any) {
+		res.status(404).send({ message: error.message });
+	}
+};
+
+const getTopCategories = async (req: Request, res: Response) => {
+	/*
+		{
+	_id: ...
+	product: ...
+	count: 123
+	}
+		*/
+	try {
+		const bills = await BillModel.find();
+		const sellings = bills.map((bill) => bill.products).flat();
+		const subProductsSellings: {
+			_id: string;
+			count: number;
+			productId: string;
+			qty?: number;
+			total: number;
+		}[] = [];
+
+		if (sellings.length > 0) {
+			sellings.forEach((product: any) => {
+				const index = subProductsSellings.findIndex(
+					(subProduct) => subProduct._id === product._id
+				);
+
+				const total = product.price * product.count;
+
+				if (index === -1) {
+					subProductsSellings.push({
+						_id: product._id,
+						count: product.count,
+						qty: product.qty,
+						productId: product.productId,
+						total: total ?? 0,
+					});
+				} else {
+					subProductsSellings[index].count += product.count;
+					subProductsSellings[index].qty += product.qty;
+					subProductsSellings[index].total += total;
+				}
+			});
+		}
+
+		const products: {
+			_id: string;
+			count: number;
+			qty: number;
+			total: number;
+		}[] = [];
+
+		subProductsSellings.forEach((subProduct) => {
+			const index = products.findIndex(
+				(product) => product._id === subProduct.productId
+			);
+
+			if (index !== -1) {
+				products[index].count += subProduct.count;
+				products[index].qty += subProduct.qty ? subProduct.qty : 0;
+				products[index].total += subProduct.total;
+			} else {
+				products.push({
+					_id: subProduct.productId,
+					count: subProduct.count,
+					qty: subProduct.qty ?? 0,
+					total: subProduct.total,
+				});
+			}
+		});
+
+		const categories = await CategoryModel.find();
+
+		const countOfCategories = categories.map(async (category: any) => {
+			const productsOfCategory = await ProductModel.find({
+				categories: { $all: category._id },
+			}).select('_id');
+
+			const vals =
+				productsOfCategory.length > 0
+					? productsOfCategory.map((product: any) => {
+							const item = products.find(
+								(element) => element._id === product._id
+							);
+
+							return item
+								? {
+										count: item.count,
+										total: item.total,
+								  }
+								: {
+										count: 0,
+										total: 0,
+								  };
+					  })
+					: [];
+
+			// console.log(products);
+			return {
+				...category._doc,
+				count: vals.reduce((a, b) => a + b.count, 0),
+				total: vals.reduce((a, b) => a + b.total, 0),
+			};
+		});
+
+		const topCategories = await Promise.all(countOfCategories);
+
+		res.status(200).json({
+			message: 'Get top categories successfully',
+			data: topCategories.sort((a, b) => b.count - a.count).slice(0, 4),
+		});
+	} catch (error: any) {
+		console.log(error);
+		res.status(404).send({ message: error.message });
+	}
+};
+
+export {
+	getOrderAndPurchase,
+	getTopSellingAndLowQuantity,
+	getTotalProfit,
+	getTopCategories,
+};

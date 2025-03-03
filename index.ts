@@ -19,6 +19,8 @@ import adminRouter from './src/routers/adminRouter';
 
 import cors from 'cors';
 import { verifyToken } from './src/middlewares/verifyToken';
+import { logMiddleware } from './src/middlewares/logMiddleware';
+import LogModel from './src/models/LogModel';
 dotenv.config();
 
 const PORT = process.env.PORT || 3001;
@@ -33,8 +35,8 @@ app.use((req, res, next) => {
 	res.header('Access-Control-Allow-Headers', 'Content-Type');
 	next();
 });
+app.use(logMiddleware);
 
-app.use('/nettruyen', nettruyenRouter);
 app.use('/auth', userRouter);
 app.use('/customers', customerRouter);
 app.use('/products', productRouter);
@@ -49,6 +51,29 @@ app.use('/payments', paymentRouter);
 app.use('/notifications', notificationsRouter);
 app.use('/orders', orderRouter);
 app.use('/admin', adminRouter);
+
+app.get('/logs', async (req, res) => {
+	const { page, limit } = req.query;
+	const pageNumber = parseInt(page as string) || 1;
+	const limitNumber = parseInt(limit as string) || 20;
+
+	try {
+		const items = await LogModel.find()
+			.sort({ createdAt: -1 })
+			.skip((pageNumber - 1) * limitNumber)
+			.limit(limitNumber);
+
+		res.status(200).json({
+			message: 'Logs',
+			data: {
+				items,
+				total: await LogModel.countDocuments(),
+			},
+		});
+	} catch (error) {
+		res.status(404).json({ message: 'Error' });
+	}
+});
 
 const connectDB = async () => {
 	try {
