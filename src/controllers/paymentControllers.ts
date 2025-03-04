@@ -109,4 +109,36 @@ const updateBill = async (req: Request, res: Response) => {
 	}
 };
 
-export { addBill, getStatistics, updateBill };
+const getBills = async (req: Request, res: Response) => {
+	// Lấy thông tin ai mua, bao nhieu sản phẩm, tổng số tiền, ngày mua, trạng thái đơn hàng
+	/*
+		default: 0, // 0: pending, 1: shipping, 2: success, 3: cancel
+			enum: [0, 1, 2, 3],
+	*/
+
+	const { page, limit } = req.query;
+	const pageNumber = parseInt(page as string) || 1;
+	const limitNumber = parseInt(limit as string) || 20;
+	const skip = (pageNumber - 1) * limitNumber;
+
+	try {
+		const items = await BillModel.find()
+			.sort({ createdAt: -1 })
+			.skip(skip)
+			.limit(limitNumber);
+
+		res.status(200).json({
+			message: 'Success',
+			data: {
+				items,
+				total: await BillModel.countDocuments(),
+			},
+		});
+	} catch (error: any) {
+		res.status(400).json({
+			message: error.message,
+		});
+	}
+};
+
+export { addBill, getStatistics, updateBill, getBills };

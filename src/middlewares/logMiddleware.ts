@@ -17,10 +17,10 @@ export const logMiddleware = async (
 
 	const authorization = headers.authorization;
 	const tokens = authorization?.split('Bearer ')[1];
-	const verifyToken: any = jwt.verify(
-		tokens as string,
-		process.env.SECRET_KEY as string
-	);
+
+	const verifyToken: any = tokens
+		? jwt.verify(tokens as string, process.env.SECRET_KEY as string)
+		: undefined;
 	const email = verifyToken ? verifyToken.email : '';
 
 	// ai, làm cái gì, lúc nào

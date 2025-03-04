@@ -5,6 +5,7 @@ import { readFileSync } from 'fs';
 import path from 'path';
 import {
 	addBill,
+	getBills,
 	getStatistics,
 	updateBill,
 } from '../controllers/paymentControllers';
@@ -15,6 +16,7 @@ const html = readFileSync(htmlFile, 'utf-8');
 
 const router = Router();
 
+router.get('/bills', getBills);
 router.post('/add-bill', addBill);
 router.get('/statistics', getStatistics);
 router.put('/put-payment', updateBill);
